@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visualizador de Documento</title>
+    <style>
+        body {
+            background-color: #525659;
+            margin: 0;
+            padding: 20px 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .document-container {
+            width: 100%;
+            max-width: 850px;
+            background-color: white;
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+            min-height: 95vh; /* Garante que o container tenha uma altura mínima */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+        iframe {
+            width: 100%;
+            height: 95vh; /* Ajusta a altura do iframe */
+            border: none;
+        }
+        .message {
+            font-family: Arial, sans-serif;
+            padding: 40px;
+            text-align: center;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="document-container" id="viewer">
+        <!-- O conteúdo será inserido aqui pelo JavaScript -->
+    </div>
+
+    <script>
+        // Função para obter parâmetros da URL
+        const params = new URLSearchParams(window.location.search);
+        const filename = params.get('file'); // Pega o valor do parâmetro ?file=...
+
+        const viewerContainer = document.getElementById('viewer');
+
+        if (filename) {
+            // Constrói a URL completa para o arquivo dentro da pasta 'uploads' do seu repositório
+            const fileUrl = `./uploads/${filename}`;
+            const fileExtension = filename.split('.').pop().toLowerCase();
+
+            document.title = `Visualizador - ${filename}`;
+
+            if (fileExtension === 'pdf') {
+                viewerContainer.innerHTML = `<iframe src="${fileUrl}"></iframe>`;
+            } else if (['png', 'jpg', 'jpeg', 'gif', 'webp'].includes(fileExtension)) {
+                viewerContainer.innerHTML = `<img src="${fileUrl}" alt="Documento ${filename}">`;
+            } else {
+                viewerContainer.innerHTML = `
+                    <div class="message">
+                        <h2>Visualização não suportada para .${fileExtension}</h2>
+                        <p>Você pode tentar <a href="${fileUrl}" download>baixar o arquivo diretamente</a>.</p>
+                    </div>`;
+            }
+        } else {
+            viewerContainer.innerHTML = `
+                <div class="message">
+                    <h2>Nenhum arquivo especificado.</h2>
+                    <p>Use a URL no formato: .../view.html?file=SEU_ARQUIVO.pdf</p>
+                </div>`;
+        }
+    </script>
+</body>
+</html>
